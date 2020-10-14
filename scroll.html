@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>侧边栏</title>
+		<style type="text/css">
+			body {
+				padding: 0;
+				margin: 0;
+			}
+
+			.head {
+				width: 90%;
+				height: 150px;
+				margin: auto;
+				background-color: #FFC0CB;
+			}
+
+			.content {
+				width: 90%;
+				height: 250px;
+				margin: 10px auto;
+				background-color: purple;
+			}
+
+			.main {
+				width: 90%;
+				height: 700px;
+				margin: 10px auto;
+				background-color: #DB7093;
+			}
+
+			.slider-bar {
+				background-color: skyblue;
+				height: 130px;
+				width: 70px;
+				position: absolute;
+				right: 0;
+				top: 300px;
+			}
+
+			.goBack {
+				display: none;
+				position: absolute;
+				bottom: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="slider-bar">
+			<div class="goBack">
+				回到顶部
+			</div>
+		</div>
+		<div class="head">头部</div>
+		<div class="content">内容区域</div>
+		<div class="main">主体区域</div>
+	</body>
+	<script type="text/javascript">
+		let sliderbar = document.querySelector('.slider-bar');
+		let content = document.querySelector('.content');
+		let main = document.querySelector('.main');
+		let goBack = document.querySelector('.goBack');
+		let contentTop = content.offsetTop;
+		let sliderbarTop = sliderbar.offsetTop - contentTop;
+		let mainTop = main.offsetTop;
+		//页面滚动事件
+		document.addEventListener('scroll', function() {
+			// console.log(window.pageYOffset);
+			if (window.pageYOffset >= contentTop) {
+				sliderbar.style.position = 'fixed';
+				sliderbar.style.top = sliderbarTop + "px";
+			} else {
+				sliderbar.style.position = 'absolute';
+				sliderbar.style.top = "300px";
+			};
+			if (window.pageYOffset >= mainTop) {
+				goBack.style.display = 'block';
+			} else {
+				goBack.style.display = 'none';
+			};
+		});
+		sliderbar.addEventListener('click', function() {
+			animate(window, 0);
+		})
+
+		function animate(obj, target, callback) {
+			clearInterval(obj.timer); // 先清除定时器，保证只有一个定时器在执行，以免出现bug
+			obj.timer = setInterval(function() {
+				// window.pageYOffset距离顶部的距离（是负的）
+				var step = (target - window.pageYOffset) / 10; // step步长（让页面速度逐渐变慢的滑动上去）
+				step = step > 0 ? Math.ceil(step) : Math.floor(step); // step并不总是整数。大于零向上取整,小于零向下取整
+				if (window.pageYOffset == target) { // 当页面回到顶部后(即动画执行完) 清除定时器
+					clearInterval(obj.timer);
+					//  判断是否传了回调函数
+					/* if(callback) { 
+					callback();
+					 } */
+					// 可以简写为下边这种。 &&是短路运算符，存在callback（即第一个式子为true）时才会继续执行callback()
+					callback && callback();
+				}
+				// window.scroll(x, y) 滚动到文档特定位置
+				window.scroll(0, window.pageYOffset + step);
+			}, 15);
+		}
+	</script>
+</html>
